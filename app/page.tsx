@@ -1,65 +1,106 @@
-import Image from "next/image";
+import Navbar from '../components/Navbar';
+import ProductsGrid from '../components/ProductsGrid';
+import ProductionSection from '../components/ProductionSection';
+import FeaturesPromo from '../components/FeaturesPromo';
+import Footer from '../components/Footer';
+import Link from 'next/link';
+
+const stats = [
+  { value: '30+', label: 'Lat doświadczenia' },
+  { value: '8', label: 'Kategorii produktów' },
+  { value: '500', label: 'km zasięgu dostaw' },
+];
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="bg-black min-h-screen font-sans text-white flex flex-col overflow-x-hidden">
+      <Navbar />
+
+      <main className="flex-grow">
+
+        {/* ── HERO ── */}
+        <section
+          className="relative min-h-screen flex flex-col items-center justify-center text-center px-5 overflow-hidden"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=2070')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black" />
+
+          <div className="relative z-10 max-w-5xl mx-auto">
+            <p className="text-xs font-semibold uppercase tracking-[0.4em] text-industry-orange mb-6">
+              Biała Podlaska · Polska
+            </p>
+
+            <h1 className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl font-bold leading-[1.05] tracking-tight mb-6">
+              Stal{' '}
+              <span
+                className="text-transparent bg-clip-text"
+                style={{ backgroundImage: 'linear-gradient(135deg, #ff5a00 0%, #ff8c42 100%)' }}
+              >
+                na miarę
+              </span>
+              <br />
+              Twojego projektu
+            </h1>
+
+            <p className="text-lg md:text-xl text-[#86868b] max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+              Solidny partner w przemyśle. Stal zbrojeniowa, profile, rury,
+              blachy i nowoczesna prefabrykacja — dostawa do 500 km.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/zapytanie-ofertowe"
+                className="group relative inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300 overflow-hidden"
+                style={{ background: 'linear-gradient(135deg, #ff5a00, #ff3d00)' }}
+              >
+                <span className="relative z-10">Zapytanie ofertowe</span>
+                <svg className="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
+              </Link>
+
+              <Link
+                href="/oferta"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm border border-white/20 text-white/80 hover:text-white hover:border-white/40 hover:bg-white/[0.06] transition-all duration-300"
+              >
+                Nasze produkty
+              </Link>
+            </div>
+          </div>
+
+          {/* Stats bar */}
+          <div className="relative z-10 w-full max-w-3xl mx-auto mt-20">
+            <div className="grid grid-cols-3 divide-x divide-white/10 border border-white/10 rounded-2xl bg-white/[0.04] backdrop-blur-sm overflow-hidden">
+              {stats.map((s) => (
+                <div key={s.label} className="py-6 text-center">
+                  <p className="text-3xl md:text-4xl font-bold text-white">{s.value}</p>
+                  <p className="text-xs text-[#86868b] mt-1 uppercase tracking-wider">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Scroll indicator */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 animate-bounce">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </section>
+
+        <ProductsGrid />
+        <ProductionSection />
+        <FeaturesPromo />
+
       </main>
+
+      <Footer />
     </div>
   );
 }
