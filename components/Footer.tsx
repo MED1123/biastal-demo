@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import logoImg from '../public/logo_firmy.jpeg';
+import banerImg from '../public/baner_regionalny.jpeg';
 
 const LINKEDIN_URL = 'https://www.linkedin.com/in/norbert-pietrzak-490245239/';
 
@@ -38,7 +40,7 @@ export default function Footer() {
 
         {/* Col 1 – Brand */}
         <div className="border-r border-white/[0.05] pr-10 pb-12 xl:pb-0">
-          <img src="/logo_firmy.jpeg" alt="Logo Biastal" className="h-11 w-auto object-contain mb-6 opacity-90" />
+          <Image src={logoImg} alt="Logo Biastal" height={44} className="h-11 w-auto object-contain mb-6 opacity-90" unoptimized />
           <p className="text-sm text-[#555] leading-relaxed mb-7">
             Solidny partner w przemyśle hutniczym. Pełny asortyment wyrobów stalowych z dostawą do 500 km.
           </p>
@@ -152,11 +154,12 @@ export default function Footer() {
           className="group block w-full"
         >
           <Image
-            src="/baner_regionalny.jpeg"
+            src={banerImg}
             alt="Baner Programu Regionalnego Województwa Lubelskiego"
             width={1400}
             height={200}
             className="w-full max-h-24 object-contain opacity-60 group-hover:opacity-100 transition-opacity duration-300"
+            unoptimized
           />
         </Link>
       </div>

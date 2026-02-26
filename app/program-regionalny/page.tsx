@@ -1,6 +1,7 @@
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import Image from 'next/image';
+import banerImg from '../../public/baner_regionalny.jpeg';
 
 import type { Metadata } from 'next';
 
@@ -74,10 +75,11 @@ export default function ProgramRegionalny() {
                 {/* HERO */}
                 <section className="relative flex items-center justify-center overflow-hidden border-b border-gray-800" style={{ minHeight: '38vh' }}>
                     <Image
-                        src="/baner_regionalny.jpeg"
+                        src={banerImg}
                         alt="Baner Programu Regionalnego"
                         fill
                         priority
+                        unoptimized
                         className="object-cover object-center"
                     />
                     <div className="absolute inset-0 bg-black/70" />

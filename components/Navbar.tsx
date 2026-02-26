@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import logoImg from '../public/logo_firmy.jpeg';
 
 const navLinks = [
   { label: 'Oferta', href: '/oferta' },
@@ -27,12 +28,12 @@ export default function Navbar() {
           </div>
           <Link href="/" title="Strona główna – Biastal" className="transition-opacity hover:opacity-80 active:opacity-60">
             <Image
-              src="/logo_firmy.jpeg"
+              src={logoImg}
               alt="Logo Biastal"
-              width={120}
               height={40}
               className="h-10 w-auto object-contain"
               priority
+              unoptimized
             />
           </Link>
         </div>
