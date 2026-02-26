@@ -9,9 +9,19 @@ const galleryImages = [
   'https://images.unsplash.com/photo-1597773150796-e5c14ebecbf5?q=80&w=600',
 ];
 
-export const metadata = {
-  title: 'O firmie – Biastal Wyroby Hutnicze',
-  description: 'Poznaj historię i wartości firmy Biastal – rzetelnego dostawcy wyrobów hutniczych z Białej Podlaskiej.',
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'O firmie',
+  description:
+    'Poznaj historię i wartości firmy Biastal – solidnego dostawcy wyrobów hutniczych z Białej Podlaskiej od 1994 roku. Magazyn, produkcja i dostawa do 500 km.',
+  keywords: ['Biastal o firmie', 'hurtownia stali historia', 'wyroby hutnicze Biała Podlaska'],
+  alternates: { canonical: '/o-firmie' },
+  openGraph: {
+    title: 'O firmie – Biastal Wyroby Hutnicze',
+    description: 'Solidny dostawca wyrobów hutniczych od 1994 roku. Poznań historię Biastal.',
+    url: 'https://biastal.pl/o-firmie',
+  },
 };
 
 export default function OFirmiePage() {

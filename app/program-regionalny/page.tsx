@@ -2,10 +2,19 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import Image from 'next/image';
 
-export const metadata = {
-    title: 'Program Regionalny – Biastal Wyroby Hutnicze',
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Program Regionalny – Dofinansowanie UE',
     description:
         'Wzrost konkurencyjności oraz potencjału technologicznego firmy Biastal Rafał Sadowski poprzez realizację innowacyjnego projektu. Regionalny Program Operacyjny Województwa Lubelskiego 2007–2013.',
+    keywords: ['program regionalny Biastal', 'dofinansowanie UE stal', 'RPO Lubelskie 2007-2013'],
+    alternates: { canonical: '/program-regionalny' },
+    openGraph: {
+        title: 'Program Regionalny – Biastal',
+        description: 'Realizacja innowacyjnego projektu w ramach RPO Województwa Lubelskiego 2007–2013.',
+        url: 'https://biastal.pl/program-regionalny',
+    },
 };
 
 const institutions = [

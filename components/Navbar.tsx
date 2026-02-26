@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 const navLinks = [
@@ -25,10 +26,13 @@ export default function Navbar() {
             <span title="English Version" className="cursor-pointer text-base leading-none opacity-30 hover:opacity-80 transition-opacity">🇬🇧</span>
           </div>
           <Link href="/" title="Strona główna – Biastal" className="transition-opacity hover:opacity-80 active:opacity-60">
-            <img
+            <Image
               src="/logo_firmy.jpeg"
               alt="Logo Biastal"
+              width={120}
+              height={40}
               className="h-10 w-auto object-contain"
+              priority
             />
           </Link>
         </div>

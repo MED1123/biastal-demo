@@ -1,13 +1,58 @@
+'use client';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
-export const metadata = {
-  title: 'Zapytanie ofertowe – Biastal Wyroby Hutnicze',
-  description: 'Skontaktuj się z nami i uzyskaj wycenę wyrobów hutniczych. Biastal Biała Podlaska.',
-};
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function getFileIcon(file: File): string {
+  const t = file.type;
+  if (t.startsWith('image/')) return '🖼️';
+  if (t === 'application/pdf') return '📄';
+  if (t.includes('word') || t.includes('document')) return '📝';
+  if (t.includes('excel') || t.includes('spreadsheet') || t.includes('csv')) return '📊';
+  if (t.includes('zip') || t.includes('compressed')) return '🗃️';
+  return '📎';
+}
+
+interface AttachedFile {
+  file: File;
+  previewUrl: string | null;
+}
 
 export default function ZapytanieOfertowePage() {
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const processFiles = (fileList: FileList | null) => {
+    if (!fileList) return;
+    const newFiles: AttachedFile[] = Array.from(fileList).map(file => ({
+      file,
+      previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
+    }));
+    setAttachedFiles(prev => [...prev, ...newFiles]);
+  };
+
+  const removeFile = (index: number) => {
+    setAttachedFiles(prev => {
+      const toRemove = prev[index];
+      if (toRemove.previewUrl) URL.revokeObjectURL(toRemove.previewUrl);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    processFiles(e.dataTransfer.files);
+  };
+
   return (
     <div className="bg-black min-h-screen font-sans flex flex-col text-white">
       <Navbar />
@@ -71,6 +116,57 @@ export default function ZapytanieOfertowePage() {
                     className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors resize-none"
                     placeholder="Opisz czego potrzebujesz – rodzaj produktu, wymiary, ilość..."
                   />
+                </div>
+
+                {/* Strefa załączników */}
+                <div>
+                  <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">
+                    Załączniki <span className="normal-case text-[#3d3d3f]">(opcjonalnie — PDF, rysunki, zdjęcia, zestawienia)</span>
+                  </label>
+                  <div
+                    className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors ${dragging
+                        ? 'border-industry-orange bg-industry-orange/10'
+                        : 'border-white/[0.1] hover:border-industry-orange/50 hover:bg-white/[0.02]'
+                      }`}
+                    onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                    onDragLeave={() => setDragging(false)}
+                    onDrop={handleDrop}
+                    onClick={() => inputRef.current?.click()}
+                  >
+                    <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => processFiles(e.target.files)} />
+                    <div className="text-2xl mb-1">📎</div>
+                    <p className="text-sm text-[#86868b]">
+                      <span className="text-industry-orange font-semibold">Kliknij</span> lub przeciągnij pliki tutaj
+                    </p>
+                    <p className="text-xs text-[#3d3d3f] mt-1">PDF, JPG, PNG, DWG, XLSX i inne</p>
+                  </div>
+
+                  {attachedFiles.length > 0 && (
+                    <ul className="mt-3 space-y-2">
+                      {attachedFiles.map((af, index) => (
+                        <li key={index} className="flex items-center gap-3 bg-black border border-white/[0.08] rounded-xl p-3">
+                          {af.previewUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={af.previewUrl} alt={af.file.name} className="w-10 h-10 object-cover rounded-lg border border-white/10 flex-shrink-0" />
+                          ) : (
+                            <span className="text-xl w-10 text-center flex-shrink-0">{getFileIcon(af.file)}</span>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-white font-medium truncate">{af.file.name}</p>
+                            <p className="text-xs text-[#86868b]">{formatBytes(af.file.size)}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeFile(index)}
+                            className="text-[#86868b] hover:text-red-400 transition-colors text-lg leading-none flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5"
+                            title="Usuń załącznik"
+                          >
+                            ×
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
                 <div className="flex justify-between items-center pt-2 border-t border-white/[0.06]">

@@ -1,9 +1,13 @@
+"use client";
+import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import WeightCalculator from '../../components/WeightCalculator';
+import WeightCalculator, { PositionItem } from '../../components/WeightCalculator';
 import ContactForm from '../../components/ContactForm';
 
 export default function KalkulatorPage() {
+  const [positions, setPositions] = useState<PositionItem[]>([]);
+
   return (
     <div className="bg-steel-dark min-h-screen font-sans text-white flex flex-col">
       <Navbar />
@@ -24,7 +28,7 @@ export default function KalkulatorPage() {
 
           {/* Sekcja Kalkulatora */}
           <div className="mb-12">
-            <WeightCalculator />
+            <WeightCalculator onPositionsChange={setPositions} />
           </div>
 
           {/* Sekcja Zapytania Ofertowego powiązana z kalkulatorem */}
@@ -32,12 +36,13 @@ export default function KalkulatorPage() {
             <div className="mb-8 text-center md:text-left">
               <h2 className="text-2xl font-bold uppercase tracking-wider mb-2">Wyślij zapytanie na wyliczony materiał</h2>
               <p className="text-steel-light text-sm">
-                Produkty, które wyliczyłeś powyżej, możesz opisać w treści poniższego zapytania, aby uzyskać szybką wycenę od naszego działu handlowego.
+                {positions.length > 0
+                  ? 'Pozycje z Twojej listy zostały automatycznie dołączone do treści zapytania poniżej.'
+                  : 'Dodaj pozycje do listy w kalkulatorze powyżej, a zostaną automatycznie dołączone do zapytania.'}
               </p>
             </div>
 
-            {/* Wykorzystujemy ten sam gotowy komponent ContactForm, który stworzyliśmy wcześniej */}
-            <ContactForm />
+            <ContactForm positions={positions} />
           </div>
 
         </div>
