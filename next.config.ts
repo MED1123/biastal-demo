@@ -5,10 +5,6 @@ const isProd = process.env.NODE_ENV === "production";
 const nextConfig: NextConfig = {
   basePath: isProd ? '/pl' : '',
   trailingSlash: false,
-  images: {
-    loader: 'custom',
-    loaderFile: './imageLoader.ts',
-  },
   async redirects() {
     return isProd
       ? [{ source: '/', destination: '/pl', permanent: false, basePath: false }]
