@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
 
 interface PositionItem {
   id: number;
@@ -44,14 +44,68 @@ function getFileIcon(file: File): string {
 }
 
 export default function ContactForm({ positions = [] }: ContactFormProps) {
+  // Pola formularza
+  const [name, setName] = useState('');
+  const [company, setCompany] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [city, setCity] = useState('');
   const [message, setMessage] = useState('');
+
+  // Załączniki
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Status wysyłki
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
   useEffect(() => {
     setMessage(buildMessageFromPositions(positions));
   }, [positions]);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus('loading');
+    setErrorMsg('');
+
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('company', company);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('city', city);
+      formData.append('message', message);
+      formData.append('source', 'kalkulator-wag');
+
+      // Dodajemy wszystkie załączniki do FormData
+      attachedFiles.forEach((af) => {
+        formData.append('files[]', af.file);
+      });
+
+      const apiEndpoint = process.env.NODE_ENV === 'production' ? '/pl/api/contact' : '/api/contact';
+      const res = await fetch(apiEndpoint, {
+        method: 'POST',
+        // UWAGA: Kiedy wysyłamy FormData, NIE ustawiamy nagłówka Content-Type ręcznie!
+        // Przeglądarka sama ustawi multipart/form-data i doda odpowiedni boundary.
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setStatus('success');
+      } else {
+        setStatus('error');
+        setErrorMsg(data.error ?? 'Wystąpił błąd. Spróbuj ponownie.');
+      }
+    } catch {
+      setStatus('error');
+      setErrorMsg('Nie można połączyć się z serwerem (sprawdź połączenie).');
+    }
+  };
 
   const processFiles = (fileList: FileList | null) => {
     if (!fileList) return;
@@ -76,8 +130,27 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
     processFiles(e.dataTransfer.files);
   };
 
+  if (status === 'success') {
+    return (
+      <div className="bg-steel-dark p-8 border border-gray-800 text-white max-w-2xl mx-auto text-center">
+        <div className="text-5xl mb-4">✅</div>
+        <h3 className="text-xl font-bold mb-2">Wiadomość wysłana!</h3>
+        <p className="text-steel-light text-sm">Odpiszemy najszybciej jak to możliwe.</p>
+        <button
+          onClick={() => setStatus('idle')}
+          className="mt-6 text-sm text-industry-orange hover:underline"
+        >
+          Wyślij kolejne zapytanie
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <form className="bg-steel-dark p-8 border border-gray-800 text-white max-w-2xl mx-auto">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-steel-dark p-8 border border-gray-800 text-white max-w-2xl mx-auto"
+    >
       <h3 className="text-xl font-bold mb-6 border-b border-gray-700 pb-4">Formularz zapytania ofertowego</h3>
 
       {positions.length > 0 && (
@@ -91,19 +164,56 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-sm mb-2 text-steel-light">Imię i nazwisko *</label>
-          <input type="text" className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors" required />
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
+            required
+            disabled={status === 'loading'}
+          />
         </div>
         <div>
           <label className="block text-sm mb-2 text-steel-light">Nazwa firmy</label>
-          <input type="text" className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors" />
+          <input
+            type="text"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
+            disabled={status === 'loading'}
+          />
         </div>
         <div>
           <label className="block text-sm mb-2 text-steel-light">Adres e-mail *</label>
-          <input type="email" className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors" required />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
+            disabled={status === 'loading'}
+          />
         </div>
         <div>
           <label className="block text-sm mb-2 text-steel-light">Telefon kontaktowy *</label>
-          <input type="tel" className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors" required />
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
+            disabled={status === 'loading'}
+          />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-sm mb-2 text-steel-light">Miejscowość</label>
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
+            disabled={status === 'loading'}
+          />
         </div>
       </div>
 
@@ -187,8 +297,26 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
         )}
       </div>
 
-      <button type="submit" className="w-full bg-industry-orange hover:bg-orange-600 text-white font-bold py-4 uppercase tracking-widest transition-colors duration-300">
-        Wyślij zapytanie
+      {status === 'error' && (
+        <p className="text-red-400 text-sm mb-4 text-center">{errorMsg}</p>
+      )}
+
+      <button
+        type="submit"
+        disabled={status === 'loading'}
+        className="w-full bg-industry-orange hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 uppercase tracking-widest transition-colors duration-300 flex items-center justify-center gap-3"
+      >
+        {status === 'loading' ? (
+          <>
+            <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            Wysyłanie...
+          </>
+        ) : (
+          'Wyślij zapytanie'
+        )}
       </button>
     </form>
   );

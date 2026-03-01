@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, FormEvent } from 'react';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -29,6 +29,60 @@ export default function ZapytanieOfertowePage() {
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Pola formularza
+  const [name, setName] = useState('');
+  const [company, setCompany] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [city, setCity] = useState('');
+  const [message, setMessage] = useState('');
+
+  // Status wysyłki
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus('loading');
+    setErrorMsg('');
+
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('company', company);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('city', city);
+      formData.append('message', message);
+      formData.append('source', 'zapytanie-ofertowe');
+
+      attachedFiles.forEach((af) => {
+        formData.append('files[]', af.file);
+      });
+
+      const apiEndpoint = process.env.NODE_ENV === 'production' ? '/pl/api/contact' : '/api/contact';
+      const res = await fetch(apiEndpoint, {
+        method: 'POST',
+        // UWAGA: Kiedy wysyłamy FormData, NIE ustawiamy nagłówka Content-Type ręcznie!
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setStatus('success');
+        setName(''); setCompany(''); setEmail(''); setPhone(''); setCity(''); setMessage('');
+        setAttachedFiles([]);
+      } else {
+        setStatus('error');
+        setErrorMsg(data.error ?? 'Wystąpił błąd. Spróbuj ponownie.');
+      }
+    } catch {
+      setStatus('error');
+      setErrorMsg('Nie można połączyć się z serwerem.');
+    }
+  };
 
   const processFiles = (fileList: FileList | null) => {
     if (!fileList) return;
@@ -90,99 +144,134 @@ export default function ZapytanieOfertowePage() {
             {/* RIGHT: formularz */}
             <div className="flex-1 rounded-2xl bg-[#1d1d1f] border border-white/[0.06] p-8">
               <h2 className="text-xs font-semibold uppercase tracking-[0.3em] text-industry-orange mb-8">Formularz zapytania</h2>
-              <form className="space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {[
-                    { label: 'Imię i nazwisko lub nazwa firmy*', type: 'text' },
-                    { label: 'Adres email*', type: 'email' },
-                    { label: 'Numer telefonu*', type: 'tel' },
-                    { label: 'Miejscowość', type: 'text' },
-                  ].map((f) => (
-                    <div key={f.label}>
-                      <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">{f.label}</label>
-                      <input
-                        type={f.type}
-                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors"
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <div>
-                  <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Treść zapytania*</label>
-                  <textarea
-                    required
-                    rows={6}
-                    className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors resize-none"
-                    placeholder="Opisz czego potrzebujesz – rodzaj produktu, wymiary, ilość..."
-                  />
-                </div>
-
-                {/* Strefa załączników */}
-                <div>
-                  <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">
-                    Załączniki <span className="normal-case text-[#3d3d3f]">(opcjonalnie — PDF, rysunki, zdjęcia, zestawienia)</span>
-                  </label>
-                  <div
-                    className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors ${dragging
-                        ? 'border-industry-orange bg-industry-orange/10'
-                        : 'border-white/[0.1] hover:border-industry-orange/50 hover:bg-white/[0.02]'
-                      }`}
-                    onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-                    onDragLeave={() => setDragging(false)}
-                    onDrop={handleDrop}
-                    onClick={() => inputRef.current?.click()}
-                  >
-                    <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => processFiles(e.target.files)} />
-                    <div className="text-2xl mb-1">📎</div>
-                    <p className="text-sm text-[#86868b]">
-                      <span className="text-industry-orange font-semibold">Kliknij</span> lub przeciągnij pliki tutaj
-                    </p>
-                    <p className="text-xs text-[#3d3d3f] mt-1">PDF, JPG, PNG, DWG, XLSX i inne</p>
-                  </div>
-
-                  {attachedFiles.length > 0 && (
-                    <ul className="mt-3 space-y-2">
-                      {attachedFiles.map((af, index) => (
-                        <li key={index} className="flex items-center gap-3 bg-black border border-white/[0.08] rounded-xl p-3">
-                          {af.previewUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={af.previewUrl} alt={af.file.name} className="w-10 h-10 object-cover rounded-lg border border-white/10 flex-shrink-0" />
-                          ) : (
-                            <span className="text-xl w-10 text-center flex-shrink-0">{getFileIcon(af.file)}</span>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm text-white font-medium truncate">{af.file.name}</p>
-                            <p className="text-xs text-[#86868b]">{formatBytes(af.file.size)}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeFile(index)}
-                            className="text-[#86868b] hover:text-red-400 transition-colors text-lg leading-none flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5"
-                            title="Usuń załącznik"
-                          >
-                            ×
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div className="flex justify-between items-center pt-2 border-t border-white/[0.06]">
-                  <span className="text-xs text-[#3d3d3f]">* – pola wymagane</span>
+              {status === 'success' ? (
+                <div className="py-16 text-center">
+                  <div className="text-5xl mb-4">✅</div>
+                  <h3 className="text-xl font-bold mb-2">Zapytanie wysłane!</h3>
+                  <p className="text-[#86868b] text-sm">Odpiszemy najszybciej jak to możliwe.</p>
                   <button
-                    type="submit"
-                    className="inline-flex items-center gap-2 px-7 py-3 rounded-full font-semibold text-sm transition-all duration-300"
-                    style={{ background: 'linear-gradient(135deg, #ff5a00, #ff3d00)' }}
+                    onClick={() => setStatus('idle')}
+                    className="mt-6 text-sm text-industry-orange hover:underline"
                   >
-                    Wyślij zapytanie
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
+                    Wyślij kolejne zapytanie
                   </button>
                 </div>
-              </form>
+              ) : (
+                <form className="space-y-5" onSubmit={handleSubmit}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Imię i nazwisko*</label>
+                      <input type="text" required value={name} onChange={(e) => setName(e.target.value)} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Nazwa firmy</label>
+                      <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Adres email*</label>
+                      <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Numer telefonu*</label>
+                      <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Miejscowość</label>
+                      <input type="text" value={city} onChange={(e) => setCity(e.target.value)} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Treść zapytania*</label>
+                    <textarea
+                      required
+                      rows={6}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      disabled={status === 'loading'}
+                      className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors resize-none disabled:opacity-50"
+                      placeholder="Opisz czego potrzebujesz – rodzaj produktu, wymiary, ilość..."
+                    />
+                  </div>
+
+                  {/* Strefa załączników */}
+                  <div>
+                    <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">
+                      Załączniki <span className="normal-case text-[#3d3d3f]">(opcjonalnie — PDF, rysunki, zdjęcia, zestawienia)</span>
+                    </label>
+                    <div
+                      className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors ${dragging
+                        ? 'border-industry-orange bg-industry-orange/10'
+                        : 'border-white/[0.1] hover:border-industry-orange/50 hover:bg-white/[0.02]'
+                        }`}
+                      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                      onDragLeave={() => setDragging(false)}
+                      onDrop={handleDrop}
+                      onClick={() => inputRef.current?.click()}
+                    >
+                      <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => processFiles(e.target.files)} />
+                      <div className="text-2xl mb-1">📎</div>
+                      <p className="text-sm text-[#86868b]">
+                        <span className="text-industry-orange font-semibold">Kliknij</span> lub przeciągnij pliki tutaj
+                      </p>
+                      <p className="text-xs text-[#3d3d3f] mt-1">PDF, JPG, PNG, DWG, XLSX i inne</p>
+                    </div>
+
+                    {attachedFiles.length > 0 && (
+                      <ul className="mt-3 space-y-2">
+                        {attachedFiles.map((af, index) => (
+                          <li key={index} className="flex items-center gap-3 bg-black border border-white/[0.08] rounded-xl p-3">
+                            {af.previewUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={af.previewUrl} alt={af.file.name} className="w-10 h-10 object-cover rounded-lg border border-white/10 flex-shrink-0" />
+                            ) : (
+                              <span className="text-xl w-10 text-center flex-shrink-0">{getFileIcon(af.file)}</span>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-white font-medium truncate">{af.file.name}</p>
+                              <p className="text-xs text-[#86868b]">{formatBytes(af.file.size)}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeFile(index)}
+                              className="text-[#86868b] hover:text-red-400 transition-colors text-lg leading-none flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5"
+                              title="Usuń załącznik"
+                            >
+                              ×
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  {status === 'error' && (
+                    <p className="text-red-400 text-sm text-center">{errorMsg}</p>
+                  )}
+
+                  <div className="flex justify-between items-center pt-2 border-t border-white/[0.06]">
+                    <span className="text-xs text-[#3d3d3f]">* – pola wymagane</span>
+                    <button
+                      type="submit"
+                      disabled={status === 'loading'}
+                      className="inline-flex items-center gap-2 px-7 py-3 rounded-full font-semibold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ background: 'linear-gradient(135deg, #ff5a00, #ff3d00)' }}
+                    >
+                      {status === 'loading' ? 'Wysyłanie...' : 'Wyślij zapytanie'}
+                      {status !== 'loading' && (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </section>
