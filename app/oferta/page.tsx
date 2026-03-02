@@ -857,7 +857,7 @@ function renderContent(activeTab: string) {
             <li>Akcesoria bramowe (wózki, najazdy, rolki itp.)</li>
           </ul>
           <p className="text-[#86868b] text-sm mb-2">Poniżej katalog ogrodzeń w wesji pdf.</p>
-          <p className="text-[#86868b] text-sm mb-6"><a href="https://www.biastal.pl/public/upload/katalog.pdf" target="_blank" rel="noopener noreferrer" className="text-industry-orange hover:underline font-medium">Katalog do pobrania</a></p>
+          <p className="text-[#86868b] text-sm mb-6"><a href={process.env.NODE_ENV === 'production' ? '/pl/katalog.pdf' : '/katalog.pdf'} target="_blank" rel="noopener noreferrer" className="text-industry-orange hover:underline font-medium">Katalog do pobrania</a></p>
 
           <p className="text-[#86868b] text-sm mb-5">Na życzenie klienta wykonujemy nietypowe słupki ogrodzeniowe oraz adaptujemy gotowe elementy ogrodzeń według indywidualnego projektu.</p>
 

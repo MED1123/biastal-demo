@@ -4,11 +4,12 @@ import ProductionSection from '../components/ProductionSection';
 import FeaturesPromo from '../components/FeaturesPromo';
 import Footer from '../components/Footer';
 import Link from 'next/link';
+import AnimatedNumber from '../components/AnimatedNumber';
 
 const stats = [
-  { value: '30+', label: 'Lat doświadczenia' },
-  { value: '8', label: 'Kategorii produktów' },
-  { value: '500', label: 'km zasięgu dostaw' },
+  { value: 30, suffix: '+', label: 'Lat doświadczenia' },
+  { value: 8, suffix: '', label: 'Kategorii produktów' },
+  { value: 500, suffix: '', label: 'km zasięgu dostaw' },
 ];
 
 export default function Home() {
@@ -79,7 +80,9 @@ export default function Home() {
             <div className="grid grid-cols-3 divide-x divide-white/10 border border-white/10 rounded-2xl bg-white/[0.04] backdrop-blur-sm overflow-hidden">
               {stats.map((s) => (
                 <div key={s.label} className="py-6 text-center">
-                  <p className="text-3xl md:text-4xl font-bold text-white">{s.value}</p>
+                  <p className="text-3xl md:text-4xl font-bold text-white">
+                    <AnimatedNumber end={s.value} suffix={s.suffix} />
+                  </p>
                   <p className="text-xs text-[#86868b] mt-1 uppercase tracking-wider">{s.label}</p>
                 </div>
               ))}
