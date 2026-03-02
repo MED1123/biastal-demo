@@ -9,7 +9,6 @@ const navLinks = [
   { label: 'Zapytanie ofertowe', href: '/zapytanie-ofertowe' },
   { label: 'O firmie', href: '/o-firmie' },
   { label: 'Kontakt', href: '/kontakt' },
-  { label: 'Program Regionalny', href: '/program-regionalny' },
   { label: 'Kalkulator wag', href: '/kalkulator-wag', accent: true },
 ];
 

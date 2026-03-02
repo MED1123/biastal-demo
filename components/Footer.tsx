@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import logoImg from '../public/logo_firmy.jpeg';
-import banerImg from '../public/baner_regionalny.jpeg';
 
 const LINKEDIN_URL = 'https://www.linkedin.com/in/norbert-pietrzak-490245239/';
 
@@ -12,7 +11,6 @@ const navLinks = [
   { label: 'Zapytanie ofertowe', href: '/zapytanie-ofertowe' },
   { label: 'O firmie', href: '/o-firmie' },
   { label: 'Kontakt', href: '/kontakt' },
-  { label: 'Program Regionalny', href: '/program-regionalny' },
 ];
 
 export default function Footer() {
@@ -146,23 +144,6 @@ export default function Footer() {
         </a>
       </div>
 
-      {/* ── Baner regionalny – pełna szerokość, klikalny ── */}
-      <div className="border-t border-white/[0.04] bg-black">
-        <Link
-          href="/program-regionalny"
-          title="Program Regionalny – Województwo Lubelskie"
-          className="group block w-full"
-        >
-          <Image
-            src={banerImg}
-            alt="Baner Programu Regionalnego Województwa Lubelskiego"
-            width={1400}
-            height={200}
-            className="w-full max-h-24 object-contain opacity-60 group-hover:opacity-100 transition-opacity duration-300"
-            unoptimized
-          />
-        </Link>
-      </div>
     </footer>
   );
 }
