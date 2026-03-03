@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, Variants } from 'framer-motion';
 
 const features = [
@@ -119,10 +120,15 @@ export default function FeaturesPromo() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
             >
-              <div
-                className="w-32 h-32 mx-auto rounded-2xl bg-cover bg-center mb-6 opacity-80 border border-white/10"
-                style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=400')" }}
-              />
+              <div className="relative w-32 h-32 mx-auto rounded-2xl mb-6 overflow-hidden opacity-80 border border-white/10">
+                <Image
+                  src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=400"
+                  alt="Kalkulator wag stalowych"
+                  fill
+                  sizes="128px"
+                  className="object-cover"
+                />
+              </div>
               <p className="text-white font-medium mb-1">Sprawdź ile będzie ważyć</p>
               <p className="text-[#86868b] text-sm mb-8">Twoje zamówienie stalowe</p>
 

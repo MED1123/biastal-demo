@@ -183,7 +183,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://images.unsplash.com" />
         {/* Favicony */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/pl/logo_firmy.jpeg" type="image/jpeg" sizes="any" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

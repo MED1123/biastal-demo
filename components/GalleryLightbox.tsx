@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
+import Image from 'next/image';
 
 interface GalleryLightboxProps {
     images: string[];
@@ -100,10 +101,12 @@ export default function GalleryLightbox({ images, gridClassName, imageClassName 
                         onClick={() => openLightbox(idx)}
                     >
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
-                        <img
+                        <Image
                             src={img}
                             alt={`Galeria ${idx + 1}`}
-                            className="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-700 ease-out"
+                            fill
+                            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                            className="object-cover scale-100 group-hover:scale-110 transition-transform duration-700 ease-out"
                         />
 
                         {/* Hover expand icon */}
@@ -168,9 +171,8 @@ export default function GalleryLightbox({ images, gridClassName, imageClassName 
                         {/* Main Image Container */}
                         <div className="relative z-50 w-full max-w-6xl aspect-[4/3] md:aspect-video flex items-center justify-center">
                             <AnimatePresence custom={direction} mode="popLayout">
-                                <motion.img
+                                <motion.div
                                     key={currentIndex}
-                                    src={images[currentIndex]}
                                     custom={direction}
                                     variants={slideVariants}
                                     initial="hidden"
@@ -188,9 +190,18 @@ export default function GalleryLightbox({ images, gridClassName, imageClassName 
                                             prevImage();
                                         }
                                     }}
-                                    className="absolute max-h-full max-w-full object-contain rounded-xl shadow-[0_0_100px_rgba(0,0,0,0.5)] cursor-grab active:cursor-grabbing border border-white/5"
-                                    alt={`Biastal gallery item ${currentIndex + 1}`}
-                                />
+                                    className="absolute w-full h-full cursor-grab active:cursor-grabbing flex items-center justify-center"
+                                >
+                                    <div className="relative w-full h-full">
+                                        <Image
+                                            src={images[currentIndex]}
+                                            alt={`Biastal gallery item ${currentIndex + 1}`}
+                                            fill
+                                            sizes="100vw"
+                                            className="object-contain rounded-xl shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-white/5 pointer-events-none"
+                                        />
+                                    </div>
+                                </motion.div>
                             </AnimatePresence>
                         </div>
 

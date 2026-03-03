@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, Variants } from 'framer-motion';
 
 const products = [
@@ -70,15 +71,18 @@ export default function ProductsGrid() {
                 className="group relative h-64 rounded-2xl overflow-hidden bg-[#1d1d1f] border border-white/[0.06] hover:border-white/20 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/60 block"
               >
                 {/* Photo */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-80"
-                  style={{ backgroundImage: `url('${product.img}')` }}
+                <Image
+                  src={product.img}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-80"
                 />
                 {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10 z-10" />
 
                 {/* Content */}
-                <div className="absolute inset-0 flex flex-col justify-end p-5">
+                <div className="absolute inset-0 flex flex-col justify-end p-5 z-20">
                   <h3 className="text-white font-semibold text-sm tracking-wide uppercase leading-tight">
                     {product.name}
                   </h3>

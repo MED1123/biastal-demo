@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 export interface PositionItem {
   id: number;
@@ -22,6 +22,36 @@ export default function WeightCalculator({ onPositionsChange }: WeightCalculator
   // Lista pozycji (pamięć podręczna)
   const [positions, setPositions] = useState<PositionItem[]>([]);
   const [nextId, setNextId] = useState(1);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Wczytywanie z Local Storage przy montowaniu
+  useEffect(() => {
+    const saved = localStorage.getItem('biastal_cart');
+    if (saved) {
+      try {
+        const parsed: PositionItem[] = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setPositions(parsed);
+          if (parsed.length > 0) {
+            const maxId = Math.max(...parsed.map(p => p.id));
+            setNextId(maxId + 1);
+          }
+          // Notify parent (e.g. contact form) about loaded items
+          onPositionsChange?.(parsed);
+        }
+      } catch (e) {
+        console.error("Failed to parse cart from local storage", e);
+      }
+    }
+    setIsLoaded(true);
+  }, []); // Run only once on mount
+
+  // Zapisywanie do Local Storage przy każdej zmianie
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('biastal_cart', JSON.stringify(positions));
+    }
+  }, [positions, isLoaded]);
 
   // System bezpieczeństwa – rate limiting
   const clickLog = useRef<Record<string, number[]>>({}); // sygnatura -> tablica timestampów

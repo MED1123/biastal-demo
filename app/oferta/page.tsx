@@ -1005,16 +1005,16 @@ export default function OfertaPage() {
           <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-6">
 
             {/* Sidebar */}
-            <aside className="lg:w-64 shrink-0">
-              <ul className="flex flex-row lg:flex-col flex-wrap gap-1">
+            <aside className="lg:w-64 shrink-0 -mx-5 px-5 lg:mx-0 lg:px-0">
+              <ul className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 pb-2 lg:pb-0 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {categories.map((cat) => (
-                  <li key={cat.id}>
+                  <li key={cat.id} className="shrink-0">
                     <button
                       onClick={() => setActiveTab(cat.id)}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2
+                      className={`whitespace-nowrap w-auto lg:w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2
                         ${activeTab === cat.id
-                          ? 'bg-industry-orange text-white'
-                          : 'text-[#86868b] hover:text-white hover:bg-white/[0.06]'
+                          ? 'bg-industry-orange text-white shadow-[0_0_15px_rgba(255,90,0,0.3)]'
+                          : 'text-[#86868b] bg-[#1d1d1f] lg:bg-transparent hover:text-white hover:bg-white/[0.06] border border-white/[0.04] lg:border-none'
                         }`}
                     >
                       {activeTab === cat.id && (

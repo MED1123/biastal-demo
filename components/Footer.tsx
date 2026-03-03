@@ -138,9 +138,9 @@ export default function Footer() {
           href={LINKEDIN_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[10px] font-mono text-[#333] tracking-widest hover:text-industry-orange transition-colors hidden sm:block"
+          className="text-[10px] font-mono text-[#333] tracking-widest hover:text-industry-orange transition-colors mt-2 sm:mt-0"
         >
-          DESIGN: PIETRZAK NORBERT ↗
+          DESIGN I REALIZACJA: PIETRZAK NORBERT ↗
         </a>
       </div>
 
