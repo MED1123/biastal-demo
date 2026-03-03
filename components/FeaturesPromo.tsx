@@ -1,4 +1,7 @@
+"use client";
+
 import Link from 'next/link';
+import { motion, Variants } from 'framer-motion';
 
 const features = [
   {
@@ -39,6 +42,28 @@ const features = [
   },
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { x: -30, opacity: 0 },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.7,
+      ease: [0.16, 1, 0.3, 1]
+    }
+  }
+};
+
 export default function FeaturesPromo() {
   return (
     <section className="py-28 bg-black">
@@ -55,10 +80,17 @@ export default function FeaturesPromo() {
               Oferujemy
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 gap-5"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {features.map((f, idx) => (
-                <div
+                <motion.div
                   key={idx}
+                  variants={itemVariants}
                   className="group p-6 rounded-2xl bg-[#1d1d1f] border border-white/[0.06] hover:border-white/20 hover:-translate-y-1 transition-all duration-300"
                 >
                   <div className="w-10 h-10 rounded-xl bg-industry-orange/10 text-industry-orange flex items-center justify-center mb-4 group-hover:bg-industry-orange/20 transition-colors">
@@ -66,9 +98,9 @@ export default function FeaturesPromo() {
                   </div>
                   <h3 className="font-semibold text-white mb-2 text-[15px]">{f.title}</h3>
                   <p className="text-[#86868b] text-sm leading-relaxed">{f.desc}</p>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
 
           {/* RIGHT: Kalkulator */}
@@ -80,7 +112,13 @@ export default function FeaturesPromo() {
               Kalkulator<br />wag
             </h2>
 
-            <div className="rounded-2xl border border-white/[0.08] bg-[#1d1d1f] p-8 text-center">
+            <motion.div
+              className="rounded-2xl border border-white/[0.08] bg-[#1d1d1f] p-8 text-center"
+              initial={{ scale: 0.95, opacity: 0, filter: 'blur(5px)' }}
+              whileInView={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            >
               <div
                 className="w-32 h-32 mx-auto rounded-2xl bg-cover bg-center mb-6 opacity-80 border border-white/10"
                 style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=400')" }}
@@ -98,7 +136,7 @@ export default function FeaturesPromo() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

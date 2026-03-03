@@ -1,5 +1,6 @@
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import GalleryLightbox from '../../components/GalleryLightbox';
 
 const galleryImages = [
   'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=600',
@@ -56,7 +57,7 @@ export default function OFirmiePage() {
                   Jesteśmy rzetelnym i profesjonalnym dostawcą wyrobów hutniczych wielu
                   znanych i sprawdzonych producentów z kraju i zagranicy. Dysponujemy
                   największym w regionie magazynem z pełną paletą asortymentową, dzięki
-                  któremu zamówienia realizowane są szybko i kompleksowo.
+                  temu zamówienia realizowane są szybko i kompleksowo.
                 </p>
                 <p>
                   Kierując się potrzebami klienta, dostarczamy towar bezpośrednio od
@@ -76,20 +77,7 @@ export default function OFirmiePage() {
             {/* Galeria */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.4em] text-industry-orange mb-6">Galeria</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                {galleryImages.map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="aspect-square rounded-xl overflow-hidden group cursor-pointer border border-white/[0.06] hover:border-white/20 transition-all duration-300"
-                  >
-                    <img
-                      src={img}
-                      alt={`Biastal – zdjęcie ${idx + 1}`}
-                      className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                    />
-                  </div>
-                ))}
-              </div>
+              <GalleryLightbox images={galleryImages} />
             </div>
           </div>
         </section>

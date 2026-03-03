@@ -1,4 +1,7 @@
+"use client";
+
 import Link from 'next/link';
+import { motion, Variants } from 'framer-motion';
 
 const products = [
   { name: 'Stal zbrojeniowa', img: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=800' },
@@ -10,6 +13,29 @@ const products = [
   { name: 'Blachy', img: 'https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?q=80&w=800' },
   { name: 'Ogrodzenia / panele', img: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800' },
 ];
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { scale: 0.85, opacity: 0, filter: 'blur(10px)' },
+  visible: {
+    scale: 1,
+    opacity: 1,
+    filter: 'blur(0px)',
+    transition: {
+      duration: 0.7,
+      ease: [0.16, 1, 0.3, 1]
+    }
+  }
+};
 
 export default function ProductsGrid() {
   return (
@@ -30,39 +56,46 @@ export default function ProductsGrid() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+        >
           {products.map((product, idx) => (
-            <Link
-              key={idx}
-              href="/oferta"
-              className="group relative h-64 rounded-2xl overflow-hidden bg-[#1d1d1f] border border-white/[0.06] hover:border-white/20 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/60"
-            >
-              {/* Photo */}
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-80"
-                style={{ backgroundImage: `url('${product.img}')` }}
-              />
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10" />
+            <motion.div key={idx} variants={itemVariants}>
+              <Link
+                href="/oferta"
+                className="group relative h-64 rounded-2xl overflow-hidden bg-[#1d1d1f] border border-white/[0.06] hover:border-white/20 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/60 block"
+              >
+                {/* Photo */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-80"
+                  style={{ backgroundImage: `url('${product.img}')` }}
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10" />
 
-              {/* Content */}
-              <div className="absolute inset-0 flex flex-col justify-end p-5">
-                <h3 className="text-white font-semibold text-sm tracking-wide uppercase leading-tight">
-                  {product.name}
-                </h3>
-                <div className="flex items-center gap-1 mt-2 text-industry-orange text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                  <span>Zobacz ofertę</span>
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
+                {/* Content */}
+                <div className="absolute inset-0 flex flex-col justify-end p-5">
+                  <h3 className="text-white font-semibold text-sm tracking-wide uppercase leading-tight">
+                    {product.name}
+                  </h3>
+                  <div className="flex items-center gap-1 mt-2 text-industry-orange text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+                    <span>Zobacz ofertę</span>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
 
-              {/* Orange accent line on hover */}
-              <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-industry-orange group-hover:w-full transition-all duration-500" />
-            </Link>
+                {/* Orange accent line on hover */}
+                <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-industry-orange group-hover:w-full transition-all duration-500" />
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <div className="text-center mt-12">
           <Link

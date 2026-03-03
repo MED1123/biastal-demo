@@ -42,8 +42,42 @@ export default function ZapytanieOfertowePage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
+  const clearError = () => {
+    if (status === 'error') {
+      setStatus('idle');
+      setErrorMsg('');
+    }
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Custom Validation
+    const missingFields = [];
+    if (!name.trim()) missingFields.push('Imię i nazwisko');
+    if (!email.trim()) missingFields.push('Adres e-mail');
+    if (!phone.trim()) missingFields.push('Numer telefonu');
+    if (!message.trim()) missingFields.push('Treść zapytania');
+
+    if (missingFields.length > 0) {
+      setStatus('error');
+      setErrorMsg(`Proszę uzupełnić wymagane pola: ${missingFields.join(', ')}.`);
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setStatus('error');
+      setErrorMsg('Adres e-mail musi zawierać znak "@" (np. jan@domena.pl).');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setStatus('error');
+      setErrorMsg('Podany adres e-mail jest nieprawidłowy. Upewnij się, że posiada poprawną domenę na końcu (np. .pl, .com) i nie zawiera spacji.');
+      return;
+    }
+
     setStatus('loading');
     setErrorMsg('');
 
@@ -161,40 +195,39 @@ export default function ZapytanieOfertowePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Imię i nazwisko*</label>
-                      <input type="text" required value={name} onChange={(e) => setName(e.target.value)} disabled={status === 'loading'}
-                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                      <input type="text" value={name} onChange={(e) => { setName(e.target.value); clearError(); }} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50" />
                     </div>
                     <div>
                       <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Nazwa firmy</label>
-                      <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} disabled={status === 'loading'}
-                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                      <input type="text" value={company} onChange={(e) => { setCompany(e.target.value); clearError(); }} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50" />
                     </div>
                     <div>
                       <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Adres email*</label>
-                      <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={status === 'loading'}
-                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                      <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); clearError(); }} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50" />
                     </div>
                     <div>
                       <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Numer telefonu*</label>
-                      <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} disabled={status === 'loading'}
-                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                      <input type="tel" value={phone} onChange={(e) => { setPhone(e.target.value); clearError(); }} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50" />
                     </div>
                     <div>
                       <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Miejscowość</label>
-                      <input type="text" value={city} onChange={(e) => setCity(e.target.value)} disabled={status === 'loading'}
-                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50" />
+                      <input type="text" value={city} onChange={(e) => { setCity(e.target.value); clearError(); }} disabled={status === 'loading'}
+                        className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50" />
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Treść zapytania*</label>
                     <textarea
-                      required
                       rows={6}
                       value={message}
-                      onChange={(e) => setMessage(e.target.value)}
+                      onChange={(e) => { setMessage(e.target.value); clearError(); }}
                       disabled={status === 'loading'}
-                      className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:outline-none transition-colors resize-none disabled:opacity-50"
+                      className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 resize-none disabled:opacity-50"
                       placeholder="Opisz czego potrzebujesz – rodzaj produktu, wymiary, ilość..."
                     />
                   </div>
@@ -259,12 +292,13 @@ export default function ZapytanieOfertowePage() {
                     <button
                       type="submit"
                       disabled={status === 'loading'}
-                      className="inline-flex items-center gap-2 px-7 py-3 rounded-full font-semibold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="relative overflow-hidden group inline-flex items-center gap-2 px-7 py-3 rounded-full font-semibold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_30px_rgba(255,90,0,0.6)] hover:-translate-y-0.5"
                       style={{ background: 'linear-gradient(135deg, #ff5a00, #ff3d00)' }}
                     >
-                      {status === 'loading' ? 'Wysyłanie...' : 'Wyślij zapytanie'}
+                      <div className="absolute inset-0 bg-white/25 translate-x-[-100%] skew-x-[30deg] group-hover:animate-[shine_1s_ease-out_forwards]" />
+                      <span className="relative z-10">{status === 'loading' ? 'Wysyłanie...' : 'Wyślij zapytanie'}</span>
                       {status !== 'loading' && (
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
                       )}

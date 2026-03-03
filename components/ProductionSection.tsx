@@ -1,3 +1,7 @@
+"use client";
+
+import { motion, Variants } from 'framer-motion';
+
 const productions = [
   {
     img: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=1000',
@@ -19,6 +23,29 @@ const productions = [
   },
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { rotateX: -20, y: 40, opacity: 0, transformPerspective: 1000 },
+  visible: {
+    rotateX: 0,
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.8,
+      ease: [0.25, 1, 0.5, 1]
+    }
+  }
+};
+
 export default function ProductionSection() {
   return (
     <section className="py-28 bg-[#0a0a0a]">
@@ -38,10 +65,17 @@ export default function ProductionSection() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
           {productions.map((item, idx) => (
-            <div
+            <motion.div
               key={idx}
+              variants={itemVariants}
               className={`group relative overflow-hidden rounded-2xl bg-[#1d1d1f] border border-white/[0.06] hover:border-white/20 transition-all duration-500 ${item.span} ${idx < 2 ? 'h-72' : 'h-64'}`}
             >
               <div
@@ -56,9 +90,9 @@ export default function ProductionSection() {
                 <p className="text-industry-orange text-sm font-medium">{item.sub}</p>
               </div>
               <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-industry-orange group-hover:w-full transition-all duration-500" />
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

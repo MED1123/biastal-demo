@@ -61,12 +61,46 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
+  const clearError = () => {
+    if (status === 'error') {
+      setStatus('idle');
+      setErrorMsg('');
+    }
+  };
+
   useEffect(() => {
     setMessage(buildMessageFromPositions(positions));
   }, [positions]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Custom Validation
+    const missingFields = [];
+    if (!name.trim()) missingFields.push('Imię i nazwisko');
+    if (!email.trim()) missingFields.push('Adres e-mail');
+    if (!phone.trim()) missingFields.push('Telefon kontaktowy');
+    if (!message.trim()) missingFields.push('Treść zapytania');
+
+    if (missingFields.length > 0) {
+      setStatus('error');
+      setErrorMsg(`Proszę uzupełnić wymagane pola: ${missingFields.join(', ')}.`);
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setStatus('error');
+      setErrorMsg('Adres e-mail musi zawierać znak "@" (np. jan@domena.pl).');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setStatus('error');
+      setErrorMsg('Podany adres e-mail jest nieprawidłowy. Upewnij się, że posiada poprawną domenę na końcu (np. .pl, .com) i nie zawiera spacji.');
+      return;
+    }
+
     setStatus('loading');
     setErrorMsg('');
 
@@ -88,8 +122,6 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
       const apiEndpoint = process.env.NODE_ENV === 'production' ? '/pl/api/contact' : '/api/contact';
       const res = await fetch(apiEndpoint, {
         method: 'POST',
-        // UWAGA: Kiedy wysyłamy FormData, NIE ustawiamy nagłówka Content-Type ręcznie!
-        // Przeglądarka sama ustawi multipart/form-data i doda odpowiedni boundary.
         body: formData,
       });
 
@@ -167,9 +199,8 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
-            required
+            onChange={(e) => { setName(e.target.value); clearError(); }}
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5"
             disabled={status === 'loading'}
           />
         </div>
@@ -178,8 +209,8 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
           <input
             type="text"
             value={company}
-            onChange={(e) => setCompany(e.target.value)}
-            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
+            onChange={(e) => { setCompany(e.target.value); clearError(); }}
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5"
             disabled={status === 'loading'}
           />
         </div>
@@ -188,9 +219,9 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => { setEmail(e.target.value); clearError(); }}
             required
-            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5"
             disabled={status === 'loading'}
           />
         </div>
@@ -199,9 +230,9 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
           <input
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => { setPhone(e.target.value); clearError(); }}
             required
-            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5"
             disabled={status === 'loading'}
           />
         </div>
@@ -210,8 +241,8 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
           <input
             type="text"
             value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors"
+            onChange={(e) => { setCity(e.target.value); clearError(); }}
+            className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5"
             disabled={status === 'loading'}
           />
         </div>
@@ -224,9 +255,8 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
         <textarea
           rows={positions.length > 0 ? positions.length + 4 : 5}
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange outline-none transition-colors resize-none font-mono text-sm"
-          required
+          onChange={(e) => { setMessage(e.target.value); clearError(); }}
+          className="w-full bg-steel-gray border border-gray-600 p-3 focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 resize-none font-mono text-sm focus:-translate-y-0.5"
         />
       </div>
 
@@ -304,18 +334,19 @@ export default function ContactForm({ positions = [] }: ContactFormProps) {
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="w-full bg-industry-orange hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 uppercase tracking-widest transition-colors duration-300 flex items-center justify-center gap-3"
+        className="relative overflow-hidden group w-full bg-industry-orange hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-3 hover:shadow-[0_0_30px_rgba(255,90,0,0.6)]"
       >
+        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] skew-x-[30deg] group-hover:animate-[shine_1s_ease-out_forwards]" />
         {status === 'loading' ? (
           <>
-            <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
+            <svg className="animate-spin relative z-10 w-5 h-5" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            Wysyłanie...
+            <span className="relative z-10">Wysyłanie...</span>
           </>
         ) : (
-          'Wyślij zapytanie'
+          <span className="relative z-10">Wyślij zapytanie</span>
         )}
       </button>
     </form>

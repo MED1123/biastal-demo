@@ -41,8 +41,42 @@ export default function KontaktPage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
+  const clearError = () => {
+    if (status === 'error') {
+      setStatus('idle');
+      setErrorMsg('');
+    }
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Custom Validation
+    const missingFields = [];
+    if (!name.trim()) missingFields.push('Imię i nazwisko');
+    if (!email.trim()) missingFields.push('Adres e-mail');
+    if (!phone.trim()) missingFields.push('Numer telefonu');
+    if (!message.trim()) missingFields.push('Treść');
+
+    if (missingFields.length > 0) {
+      setStatus('error');
+      setErrorMsg(`Proszę uzupełnić wymagane pola: ${missingFields.join(', ')}.`);
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setStatus('error');
+      setErrorMsg('Adres e-mail musi zawierać znak "@" (np. jan@domena.pl).');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setStatus('error');
+      setErrorMsg('Podany adres e-mail jest nieprawidłowy. Upewnij się, że posiada poprawną domenę na końcu (np. .pl, .com) i nie zawiera spacji.');
+      return;
+    }
+
     setStatus('loading');
     setErrorMsg('');
 
@@ -201,11 +235,10 @@ export default function KontaktPage() {
                           <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Imię i nazwisko*</label>
                           <input
                             type="text"
-                            required
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => { setName(e.target.value); clearError(); }}
                             disabled={status === 'loading'}
-                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50"
+                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50"
                           />
                         </div>
                         <div>
@@ -213,31 +246,29 @@ export default function KontaktPage() {
                           <input
                             type="text"
                             value={company}
-                            onChange={(e) => setCompany(e.target.value)}
+                            onChange={(e) => { setCompany(e.target.value); clearError(); }}
                             disabled={status === 'loading'}
-                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50"
+                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50"
                           />
                         </div>
                         <div>
                           <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Adres email*</label>
                           <input
                             type="email"
-                            required
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => { setEmail(e.target.value); clearError(); }}
                             disabled={status === 'loading'}
-                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50"
+                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50"
                           />
                         </div>
                         <div>
                           <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Numer telefonu*</label>
                           <input
                             type="tel"
-                            required
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={(e) => { setPhone(e.target.value); clearError(); }}
                             disabled={status === 'loading'}
-                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50"
+                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50"
                           />
                         </div>
                         <div>
@@ -245,20 +276,19 @@ export default function KontaktPage() {
                           <input
                             type="text"
                             value={city}
-                            onChange={(e) => setCity(e.target.value)}
+                            onChange={(e) => { setCity(e.target.value); clearError(); }}
                             disabled={status === 'loading'}
-                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:outline-none transition-colors disabled:opacity-50"
+                            className="w-full bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 disabled:opacity-50"
                           />
                         </div>
                       </div>
                       <div className="flex flex-col">
                         <label className="block text-xs text-[#86868b] mb-2 uppercase tracking-wider">Treść*</label>
                         <textarea
-                          required
                           value={message}
-                          onChange={(e) => setMessage(e.target.value)}
+                          onChange={(e) => { setMessage(e.target.value); clearError(); }}
                           disabled={status === 'loading'}
-                          className="flex-1 min-h-[180px] bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:outline-none transition-colors resize-none disabled:opacity-50"
+                          className="flex-1 min-h-[180px] bg-black border border-white/[0.1] rounded-xl px-4 py-3 text-white text-sm placeholder:text-[#3d3d3f] focus:border-industry-orange focus:ring-4 focus:ring-industry-orange/20 outline-none transition-all duration-300 focus:-translate-y-0.5 resize-none disabled:opacity-50"
                         />
                       </div>
                     </div>
@@ -323,12 +353,13 @@ export default function KontaktPage() {
                       <button
                         type="submit"
                         disabled={status === 'loading'}
-                        className="inline-flex items-center gap-2 px-7 py-3 rounded-full font-semibold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="relative overflow-hidden group inline-flex items-center gap-2 px-7 py-3 rounded-full font-semibold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_30px_rgba(255,90,0,0.6)] hover:-translate-y-0.5"
                         style={{ background: 'linear-gradient(135deg, #ff5a00, #ff3d00)' }}
                       >
-                        {status === 'loading' ? 'Wysyłanie...' : 'Wyślij wiadomość'}
+                        <div className="absolute inset-0 bg-white/25 translate-x-[-100%] skew-x-[30deg] group-hover:animate-[shine_1s_ease-out_forwards]" />
+                        <span className="relative z-10">{status === 'loading' ? 'Wysyłanie...' : 'Wyślij wiadomość'}</span>
                         {status !== 'loading' && (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                           </svg>
                         )}

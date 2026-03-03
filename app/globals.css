@@ -10,6 +10,14 @@
   --color-steel-gray: #2d3238;
   --color-steel-light: #8e97a0;
   --color-industry-orange: #ff5a00;
+
+  --animate-shine: shine 1s ease-out forwards;
+
+  @keyframes shine {
+    100% {
+      transform: translateX(100%) skewX(30deg);
+    }
+  }
 }
 
 @theme inline {

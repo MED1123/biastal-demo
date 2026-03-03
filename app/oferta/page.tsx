@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import GalleryLightbox from '../../components/GalleryLightbox';
 
 type Category = { id: string; title: string };
 
@@ -41,10 +42,10 @@ const SteelNote = () => (
   </div>
 );
 const ProductImg = ({ seed }: { seed: number }) => (
-  <img
-    src={`https://picsum.photos/400/280?random=${seed}`}
-    alt="Produkt"
-    className="w-full md:w-72 h-48 object-cover rounded-xl border border-white/[0.06] opacity-80"
+  <GalleryLightbox
+    images={[`https://picsum.photos/400/280?random=${seed}`]}
+    gridClassName="w-full md:w-72 mb-6"
+    imageClassName="w-full h-48 rounded-xl opacity-80"
   />
 );
 
@@ -843,9 +844,11 @@ function renderContent(activeTab: string) {
     case 'ogrodzenia':
       return (
         <div>
-          <div className="flex flex-wrap gap-3 mb-5">
-            {[114, 115, 116].map((s) => <img key={s} src={`https://picsum.photos/300/200?random=${s}`} alt="Ogrodzenie" className="w-36 h-24 object-cover rounded-xl border border-white/[0.06] opacity-80" />)}
-          </div>
+          <GalleryLightbox
+            images={[114, 115, 116].map(s => `https://picsum.photos/600/400?random=${s}`)}
+            gridClassName="flex flex-wrap gap-3 mb-5"
+            imageClassName="w-36 h-24 rounded-xl opacity-80"
+          />
           <p className="text-white font-semibold mb-3 text-sm">Ogrodzenia / Panele ogrodzeniowe</p>
           <p className="text-[#86868b] text-sm mb-4">Oferujemy łatwe w montażu systemy ogrodzeniowe wykonane z profili zamkniętych lub kątowników</p>
           <ul className="list-disc pl-5 text-[#86868b] text-sm mb-5 space-y-1">
@@ -878,9 +881,11 @@ function renderContent(activeTab: string) {
     case 'produkcja':
       return (
         <div>
-          <div className="flex flex-wrap gap-3 mb-5">
-            {[117, 118, 119].map((s) => <img key={s} src={`https://picsum.photos/300/200?random=${s}`} alt="Produkcja" className="w-36 h-24 object-cover rounded-xl border border-white/[0.06] opacity-80" />)}
-          </div>
+          <GalleryLightbox
+            images={[117, 118, 119].map(s => `https://picsum.photos/600/400?random=${s}`)}
+            gridClassName="flex flex-wrap gap-3 mb-5"
+            imageClassName="w-36 h-24 rounded-xl opacity-80"
+          />
           <div className="space-y-4 text-[#86868b] text-sm leading-relaxed">
             <p className="text-white font-semibold mb-0">Produkcja elementów zbrojnych</p>
             <p>Wykonujemy elementy zbrojeń prefabrykowanych zgodnie z indywidualnym zamówieniem klienta. Detale wykonywane są na nowoczesnych giętarkach automatycznych.</p>
